@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">CovidNineteen</string>
+    <string name="notification_title">Title</string>
+    <string name="notification_content_text">Content text.</string>
+    <string name="channel_title">Notification channel title</string>
+    <string name="channel_description">Notification channel description.</string>
+
+    <!-- Not translatable system strings. -->
+    <string name="website_link" translatable="false">http://dev-craft.org/</string>
+</resources>
