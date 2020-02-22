@@ -8,6 +8,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.PowerManager
+import android.os.SystemClock
 import ua.turskyi.covidnineteen.util.appIsInBackground
 
 class WebsiteAlarm : BroadcastReceiver() {
@@ -45,8 +46,6 @@ class WebsiteAlarm : BroadcastReceiver() {
         wakeLock.release()
     }
 
-
-
     fun setAnAlarmInterval(context: Context?) {
         val alarmManager = context?.getSystemService(Context.ALARM_SERVICE) as
                 AlarmManager
@@ -59,10 +58,11 @@ class WebsiteAlarm : BroadcastReceiver() {
         )
 
         val minute = theSecond * 60
+        val websiteOpenerInterval = minute * 10
         alarmManager.setRepeating(
-            AlarmManager.RTC_WAKEUP,
-            System.currentTimeMillis(),
-            minute * 1,
+            AlarmManager.ELAPSED_REALTIME_WAKEUP,
+            SystemClock.elapsedRealtime() + websiteOpenerInterval,
+            websiteOpenerInterval,
             pendingIntentAlarm
         )
     }

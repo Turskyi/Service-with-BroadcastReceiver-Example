@@ -8,6 +8,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.PowerManager
+import android.os.SystemClock
 import ua.turskyi.covidnineteen.util.appIsInBackground
 
 class NotificationAlarm : BroadcastReceiver() {
@@ -57,10 +58,11 @@ class NotificationAlarm : BroadcastReceiver() {
         )
 
         val minute = theSecond * 60
+        val notificationInterval = minute * 20
         alarmManager.setRepeating(
-            AlarmManager.RTC_WAKEUP,
-            System.currentTimeMillis(),
-            minute * 2,
+            AlarmManager.ELAPSED_REALTIME_WAKEUP,
+            SystemClock.elapsedRealtime() + notificationInterval,
+            notificationInterval,
             pendingIntentAlarm
         )
     }
