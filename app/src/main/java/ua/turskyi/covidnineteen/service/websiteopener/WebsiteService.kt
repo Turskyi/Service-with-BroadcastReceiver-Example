@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.IBinder
 import ua.turskyi.covidnineteen.R
+import ua.turskyi.covidnineteen.util.vibratePhone
 
 class WebsiteService : Service() {
 
@@ -24,6 +25,7 @@ class WebsiteService : Service() {
     }
 
     private fun openWebsite() {
+        vibratePhone(applicationContext)
         val intentBrowser = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.website_link)))
         val pendingIntentBrowser: PendingIntent = PendingIntent.getActivity(
             this, 0,

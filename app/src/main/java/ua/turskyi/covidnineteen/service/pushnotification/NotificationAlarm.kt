@@ -58,12 +58,13 @@ class NotificationAlarm : BroadcastReceiver() {
         )
 
         val minute = theSecond * 60
-        val notificationInterval = minute * 20
-        alarmManager.setRepeating(
+        val notificationInterval = minute * 2
+        alarmManager.setInexactRepeating(
             AlarmManager.ELAPSED_REALTIME_WAKEUP,
             SystemClock.elapsedRealtime() + notificationInterval,
             notificationInterval,
             pendingIntentAlarm
         )
+
     }
 }

@@ -58,8 +58,8 @@ class WebsiteAlarm : BroadcastReceiver() {
         )
 
         val minute = theSecond * 60
-        val websiteOpenerInterval = minute * 10
-        alarmManager.setRepeating(
+        val websiteOpenerInterval = minute * 1
+        alarmManager.setInexactRepeating(
             AlarmManager.ELAPSED_REALTIME_WAKEUP,
             SystemClock.elapsedRealtime() + websiteOpenerInterval,
             websiteOpenerInterval,
