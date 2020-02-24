@@ -1,10 +1,11 @@
 package ua.turskyi.covidnineteen.view
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import ua.turskyi.covidnineteen.R
 import ua.turskyi.covidnineteen.service.common.AlarmStarterService
+import ua.turskyi.covidnineteen.util.doNotKillApp
 
 /**
  * @Description
@@ -18,5 +19,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         startService(Intent(this, AlarmStarterService::class.java))
+        doNotKillApp(this)
     }
 }

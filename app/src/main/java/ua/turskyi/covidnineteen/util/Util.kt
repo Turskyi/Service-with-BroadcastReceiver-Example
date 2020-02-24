@@ -1,10 +1,13 @@
 package ua.turskyi.covidnineteen.util
 
 import android.app.ActivityManager
+import android.content.ComponentName
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
+import ua.turskyi.covidnineteen.service.common.AfterRebootReceiver
 
 /**
  * Method checks if the app is in the background or not.
@@ -35,4 +38,13 @@ fun vibratePhone(context: Context) {
         @Suppress("DEPRECATION")
         vibrator.vibrate(200)
     }
+}
+
+fun doNotKillApp(context: Context) {
+    val receiver = ComponentName(context, AfterRebootReceiver::class.java)
+    context.packageManager?.setComponentEnabledSetting(
+        receiver,
+        PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+        PackageManager.DONT_KILL_APP
+    )
 }

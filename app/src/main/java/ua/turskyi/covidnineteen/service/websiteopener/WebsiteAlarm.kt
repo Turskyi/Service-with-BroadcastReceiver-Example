@@ -19,20 +19,7 @@ class WebsiteAlarm : BroadcastReceiver() {
 
     private val theSecond = 1000L
 
-    override fun onReceive(context: Context?, intent: Intent?) {
-        val powerManager = context?.getSystemService(Context.POWER_SERVICE) as
-                PowerManager
-        val wakeLock =
-            powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WEBSITE_POWER_MANAGER_TAG
-            )
-
-        /**
-         * "wakeLock.acquire()" Acquires the wake lock with a timeout.
-         *  Ensures that the device is on at the level requested when the wake lock was created. The
-         *  lock will be released after the given timeout expires.
-         *  https://developer.android.com/reference/android/os/PowerManager.WakeLock#acquire(long)
-         */
-        wakeLock.acquire(theSecond)
+    override fun onReceive(context: Context, intent: Intent?) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (appIsInBackground(context)){
@@ -40,10 +27,25 @@ class WebsiteAlarm : BroadcastReceiver() {
             } else {
                 context.startService(Intent(context, WebsiteService::class.java))
             }
+            setAnAlarmInterval(context)
         } else {
+            val powerManager = context.getSystemService(Context.POWER_SERVICE) as
+                    PowerManager
+            val wakeLock =
+                powerManager.newWakeLock(
+                    PowerManager.PARTIAL_WAKE_LOCK, WEBSITE_POWER_MANAGER_TAG
+                )
+
+            /**
+             * "wakeLock.acquire()" Acquires the wake lock with a timeout.
+             *  Ensures that the device is on at the level requested when the wake lock was created. The
+             *  lock will be released after the given timeout expires.
+             *  https://developer.android.com/reference/android/os/PowerManager.WakeLock#acquire(long)
+             */
+            wakeLock.acquire(theSecond)
             context.startService(Intent(context, WebsiteService::class.java))
+            wakeLock.release()
         }
-        wakeLock.release()
     }
 
     fun setAnAlarmInterval(context: Context?) {
@@ -54,16 +56,23 @@ class WebsiteAlarm : BroadcastReceiver() {
         intentAlarm.data = data
         val pendingIntentAlarm = PendingIntent.getBroadcast(
             context, 1,
-            intentAlarm, 0
+            intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT
         )
-
         val minute = theSecond * 60
-        val websiteOpenerInterval = minute * 1
-        alarmManager.setInexactRepeating(
-            AlarmManager.ELAPSED_REALTIME_WAKEUP,
-            SystemClock.elapsedRealtime() + websiteOpenerInterval,
-            websiteOpenerInterval,
-            pendingIntentAlarm
-        )
+        val websiteOpenerInterval = minute * 10
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            alarmManager.setExactAndAllowWhileIdle(
+                AlarmManager.ELAPSED_REALTIME,
+                SystemClock.elapsedRealtime() + websiteOpenerInterval, pendingIntentAlarm
+            )
+        } else {
+            alarmManager.setRepeating(
+                AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                SystemClock.elapsedRealtime() + websiteOpenerInterval,
+                websiteOpenerInterval,
+                pendingIntentAlarm
+            )
+        }
     }
 }
