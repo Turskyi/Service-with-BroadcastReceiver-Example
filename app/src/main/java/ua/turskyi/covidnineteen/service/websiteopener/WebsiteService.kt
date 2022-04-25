@@ -10,9 +10,7 @@ import ua.turskyi.covidnineteen.util.vibratePhone
 
 class WebsiteService : Service() {
 
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
-    }
+    override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         openWebsite()

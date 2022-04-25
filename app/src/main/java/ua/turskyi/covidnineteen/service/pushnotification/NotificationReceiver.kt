@@ -11,8 +11,9 @@ import android.os.Build
 import android.os.PowerManager
 import android.os.SystemClock
 import ua.turskyi.covidnineteen.util.appIsInBackground
+import ua.turskyi.covidnineteen.util.setNotificationInterval
 
-class NotificationAlarm : BroadcastReceiver() {
+class NotificationReceiver : BroadcastReceiver() {
 
     companion object {
         const val NOTIFICATION_POWER_MANAGER_TAG = "NotificationPowerManager:"
@@ -23,16 +24,16 @@ class NotificationAlarm : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (appIsInBackground(context)) {
+            if (context.appIsInBackground()) {
                 context.startForegroundService(Intent(context, NotificationService::class.java))
             } else {
                 context.startService(Intent(context, this.javaClass))
             }
-            setAnAlarmInterval(context)
+            context.setNotificationInterval()
         } else {
-            val powerManager = context.getSystemService(Context.POWER_SERVICE) as
+            val powerManager: PowerManager = context.getSystemService(Context.POWER_SERVICE) as
                     PowerManager
-            val wakeLock =
+            val wakeLock: PowerManager.WakeLock =
                 powerManager.newWakeLock(
                     PowerManager.PARTIAL_WAKE_LOCK, NOTIFICATION_POWER_MANAGER_TAG
                 )
@@ -48,28 +49,27 @@ class NotificationAlarm : BroadcastReceiver() {
         }
     }
 
-    fun setAnAlarmInterval(context: Context?) {
-        val alarmManager = context?.getSystemService(ALARM_SERVICE) as
+    fun setNotificationInterval(context: Context) {
+        val alarmManager: AlarmManager = context.getSystemService(ALARM_SERVICE) as
                 AlarmManager
-        val intentAlarm = Intent(context, NotificationAlarm::class.java)
+        val intentAlarm = Intent(context, NotificationReceiver::class.java)
         val data: Uri = Uri.parse(intentAlarm.toUri(Intent.URI_INTENT_SCHEME))
         intentAlarm.data = data
         val pendingIntentAlarm = PendingIntent.getBroadcast(
             context, 2,
             intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT
         )
-        val minute = theSecond * 60
-        val notificationInterval = minute * 20
+        val minute = 1000L * 60
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             alarmManager.setExactAndAllowWhileIdle(
                 AlarmManager.ELAPSED_REALTIME,
-                SystemClock.elapsedRealtime() + notificationInterval, pendingIntentAlarm
+                SystemClock.elapsedRealtime() + minute, pendingIntentAlarm
             )
         } else {
             alarmManager.setRepeating(
                 AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                SystemClock.elapsedRealtime() + notificationInterval,
-                notificationInterval,
+                SystemClock.elapsedRealtime() + minute,
+                minute,
                 pendingIntentAlarm
             )
         }

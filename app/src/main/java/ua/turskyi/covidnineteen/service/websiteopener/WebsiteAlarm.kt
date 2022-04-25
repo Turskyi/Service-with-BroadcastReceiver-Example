@@ -22,7 +22,7 @@ class WebsiteAlarm : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (appIsInBackground(context)){
+            if (context.appIsInBackground()) {
                 context.startForegroundService(Intent(context, WebsiteService::class.java))
             } else {
                 context.startService(Intent(context, WebsiteService::class.java))
@@ -59,18 +59,17 @@ class WebsiteAlarm : BroadcastReceiver() {
             intentAlarm, PendingIntent.FLAG_UPDATE_CURRENT
         )
         val minute = theSecond * 60
-        val websiteOpenerInterval = minute * 10
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             alarmManager.setExactAndAllowWhileIdle(
                 AlarmManager.ELAPSED_REALTIME,
-                SystemClock.elapsedRealtime() + websiteOpenerInterval, pendingIntentAlarm
+                SystemClock.elapsedRealtime() + minute, pendingIntentAlarm
             )
         } else {
             alarmManager.setRepeating(
                 AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                SystemClock.elapsedRealtime() + websiteOpenerInterval,
-                websiteOpenerInterval,
+                SystemClock.elapsedRealtime() + minute,
+                minute,
                 pendingIntentAlarm
             )
         }

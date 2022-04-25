@@ -1,6 +1,9 @@
 package ua.turskyi.covidnineteen.service.pushnotification
 
-import android.app.*
+import android.app.Notification
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
@@ -13,11 +16,10 @@ import ua.turskyi.covidnineteen.R
 
 class NotificationService : Service() {
 
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
-    }
+    override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        openWebsite()
         fireNotificator()
         return START_NOT_STICKY
     }
@@ -31,7 +33,7 @@ class NotificationService : Service() {
                 APPLICATION_ID
             )
 
-            val bigTextStyle = NotificationCompat.BigTextStyle()
+            val bigTextStyle: NotificationCompat.BigTextStyle = NotificationCompat.BigTextStyle()
             bigTextStyle.setBigContentTitle(getString(R.string.notification_title))
             notificationBuilder.setContentIntent(openWebsite())
             notificationBuilder.setSmallIcon(R.mipmap.ic_launcher_round)
@@ -39,23 +41,13 @@ class NotificationService : Service() {
             notificationBuilder.setStyle(bigTextStyle)
             notificationBuilder.setSound(defaultSoundUri)
 
-            val mNotificationManager =
-                applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as
-                        NotificationManager
-
-            val notificationChannel = NotificationChannel(
-                APPLICATION_ID,
-                getString(R.string.channel_title),
-                NotificationManager.IMPORTANCE_HIGH
-            )
-            mNotificationManager.createNotificationChannel(notificationChannel)
             notificationBuilder.setChannelId(APPLICATION_ID)
-            notificationChannel.description = getString(R.string.channel_description)
 
-            val notificationManager =
+
+            val notificationManager: NotificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(notificationChannel)
-            mNotificationManager.notify(2, notificationBuilder.build())
+
+            notificationManager.notify(2, notificationBuilder.build())
         } else {
             val notifyManager: NotificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -63,7 +55,7 @@ class NotificationService : Service() {
             val notification: Notification = NotificationCompat.Builder(
                 this,
                 APPLICATION_ID
-            )   .setContentTitle(getString(R.string.notification_title))
+            ).setContentTitle(getString(R.string.notification_title))
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setSound(defaultSoundUri)
                 .setContentText(getString(R.string.notification_content_text))
